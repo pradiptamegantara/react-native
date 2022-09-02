@@ -3,7 +3,7 @@ import {ThemeProvider} from "./src/shared/context/ThemeContext";
 import useAppFont from "./src/shared/hook/UseAppFont";
 import {serviceFactory} from "./src/services/ServiceFactory";
 import {DependencyProvider} from "./src/shared/context/DependencyContext";
-import ProductList from "./src/features/Product/ProductList";
+import HomePage from "./src/features/Home/HomePage";
 
 export default function App() {
     const fonts = useAppFont();
@@ -20,7 +20,8 @@ export default function App() {
                     {/*</MainContainer>*/}
                     {/*<WelcomePage/>*/}
                     {/*<LoginPage/>*/}
-                    <ProductList/>
+                    {/*<ProductList/>*/}
+                    <HomePage/>
                 </ThemeProvider>
             </SafeAreaProvider>
         </DependencyProvider>
