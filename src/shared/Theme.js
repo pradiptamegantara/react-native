@@ -14,9 +14,12 @@ export const theme = {
         white: pallete.white
     },
     spacing: {
+        xs:4,
         s: 8,
         m: 16,
-        l: 24
+        l: 24,
+        xl: 32,
+        xxl: 40
     },
     radius: {
         s: 5,
@@ -25,17 +28,19 @@ export const theme = {
     },
     text: {
         title: {
-            fontSize: 32,
-            fontWeight: 'bold',
-            color: pallete.grey
+            fontSize: 36,
+            color: pallete.grey,
+            fontFamily: 'Poppins-Bold'
         },
         subtitle: {
-            fontSize: 16,
-            color: pallete.grey
+            fontSize: 18,
+            color: pallete.grey,
+            fontFamily: 'Poppins-Regular'
         },
         subtitle2: {
-            fontSize: 24,
-            color: pallete.grey
+            fontSize: 32,
+            color: pallete.grey,
+            fontFamily: 'Poppins-Regular'
         }
     }
 }

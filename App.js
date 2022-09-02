@@ -1,20 +1,28 @@
-import WelcomePage from "./src/features/Welcome/WelcomePage";
-import MainContainer from "./src/shared/components/MainContainer";
-import {StatusBar, Text} from "react-native";
-import LoginPage from "./src/features/Login/LoginPage";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import {ThemeProvider} from "./src/shared/context/ThemeContext";
+import useAppFont from "./src/shared/hook/UseAppFont";
+import {serviceFactory} from "./src/services/ServiceFactory";
+import {DependencyProvider} from "./src/shared/context/DependencyContext";
+import ProductList from "./src/features/Product/ProductList";
 
 export default function App() {
+    const fonts = useAppFont();
+    const services = serviceFactory();
+    if (!fonts) {
+        return null;
+    }
     return (
-        // <MainContainer>
-        //   <Text>React Native Components</Text>
-        // </MainContainer>
-        <SafeAreaProvider>
-            <ThemeProvider>
-                {/*<WelcomePage/>*/}
-                <LoginPage/>
-            </ThemeProvider>
-        </SafeAreaProvider>
+        <DependencyProvider services={services}>
+            <SafeAreaProvider>
+                <ThemeProvider>
+                    {/*<MainContainer>*/}
+                    {/*<Text>React Native Components</Text>*/}
+                    {/*</MainContainer>*/}
+                    {/*<WelcomePage/>*/}
+                    {/*<LoginPage/>*/}
+                    <ProductList/>
+                </ThemeProvider>
+            </SafeAreaProvider>
+        </DependencyProvider>
     );
 }
