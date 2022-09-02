@@ -10,16 +10,22 @@ import {useTheme} from "../../shared/context/ThemeContext";
 const ProductList = () => {
     const theme = useTheme();
     const {productService} = useDependency();
-    const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState({});
+    const [isFetching, setIsFetching] = useState(false);
     useEffect(() => {
         onGetAllProduct();
     }, []);
     const onGetAllProduct = async () => {
+        setIsFetching(true);
         try {
+            //Simulasi
+            setProducts([]);
             const response = await productService.getAllProduct();
-            setProducts(response)
+            setProducts(response);
+            setIsFetching(false);
         } catch (e) {
-            console.log('Error')
+            console.log('Error');
+            setIsFetching(false);
         }
     }
 
@@ -32,6 +38,8 @@ const ProductList = () => {
                 <View style={{margin: theme.spacing.s}}>
                     <HeaderPageLabel text='Product'/>
                     <FlatList
+                        onRefresh={onGetAllProduct}
+                        refreshing={isFetching}
                         data={products}
                         renderItem={renderItem}
                         keyExtractor={item => item.id}
