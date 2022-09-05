@@ -1,11 +1,11 @@
 import {FlatList, View} from "react-native";
 import Item from "./components/ProductItem";
-import {useDependency} from "../../shared/hook/UseDependency";
+import {useDependency} from "../../../shared/hook/UseDependency";
 import {useEffect, useState} from "react";
-import MainContainer from "../../shared/components/MainContainer";
-import HeaderPageLabel from "../../shared/components/HeaderPageLabel";
-import AppBackground from "../../shared/components/AppBackground";
-import {useTheme} from "../../shared/context/ThemeContext";
+import MainContainer from "../../../shared/components/MainContainer";
+import HeaderPageLabel from "../../../shared/components/HeaderPageLabel";
+import AppBackground from "../../../shared/components/AppBackground";
+import {useTheme} from "../../../shared/context/ThemeContext";
 
 const ProductList = () => {
     const theme = useTheme();
@@ -13,15 +13,10 @@ const ProductList = () => {
     const [products, setProducts] = useState([]);
     const [isFetching, setIsFetching] = useState(false);
     const [page, setPage] = useState(1);
-    const [isNext, setIsNext] = useState(true);
-
-    let prevOpenedRow;
-    const row = [];
-
+    const [isNext, setIsNext] = useState(true)
     useEffect(() => {
         onGetAllProduct();
     }, [page]);
-
     const onGetAllProduct = async () => {
         setIsFetching(true);
         try {
@@ -58,24 +53,8 @@ const ProductList = () => {
         setPage(1);
     }
 
-    const onDeleteItem = (index) => {
-        console.log('Delete item', products[index])
-    }
-
-    const renderItem = ({item, index}) => {
-        return <Item productName={item.productName} idx={index} onDelete={() => onDeleteItem(index)} refRow={refRows}
-                     closeRow={() => closeRow(index)}/>
-    }
-
-    const refRows = (index, ref) => {
-        row[index] = ref
-    }
-
-    const closeRow = (index) => {
-        if (prevOpenedRow && prevOpenedRow !== row[index]) {
-            prevOpenedRow.close();
-        }
-        prevOpenedRow = row[index];
+    const renderItem = ({item}) => {
+        return <Item productName={item.productName}/>
     }
     return (
         <MainContainer>
