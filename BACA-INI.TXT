@@ -1,0 +1,7 @@
+perlu tambahan library untuk nge run aplikasi ini dengan cara install :
+
+npm install --save react-native-pin-view
+
+jika tidak bisa, dengan cara
+
+npm install --force react-native-pin-view
