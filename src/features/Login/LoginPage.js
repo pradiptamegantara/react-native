@@ -1,62 +1,75 @@
-import {StyleSheet, View} from 'react-native';
-import {useState} from "react";
-import FormInput from "../../shared/components/FormInput";
-import FormButton from "../../shared/components/FormButton";
-import TitleLabel from "../../shared/components/TitleLabel";
+import { useState } from "react"
+import { Keyboard, StyleSheet, View } from "react-native"
+import MainContainer from "../../shared/components/MainContainer"
 import AppBackground from "../../shared/components/AppBackground";
-import Entypo from '@expo/vector-icons/Entypo';
-import {useTheme} from "../../shared/context/ThemeContext";
-import {useNavigation} from "@react-navigation/native";
-import {ROUTE} from "../../shared/constants";
-import MainContainer from "../../shared/components/MainContainer";
+// import TextLabel from "../../shared/components/TextLabel"
+import FormInput from "../../shared/components/FormInput";
+import FormPassword from "../../shared/components/FormPassword";
+import FormButton from "../../shared/components/FormButton"
+import { useNavigation } from "@react-navigation/native";
+import { ROUTE } from "../../shared/constants";
+// import useViewState from "../../shared/hook/useViewState"
+// import useDeps from "../../shared/hook/useDeps"
+import Spinner from "../../shared/components/Spinner"
+import SnackBar from "../../shared/components/SnackBar";
+import useViewState from "../../shared/hook/UseViewState";
+import { useDependency } from "../../shared/hook/UseDependency";
+import TitleLabel from "../../shared/components/TitleLabel";
 
 const LoginPage = () => {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
     const navigation = useNavigation()
-    const theme = useTheme();
-    const styles = styling(theme);
-    const [userName, onChangeUserName] = useState('');
-    const [password, onChangePassword] = useState('');
+
+    const { viewState, setLoading, setError } = useViewState();
+    const { loginService } = useDependency();
+
+    const onAuthenticate = async () => {
+        Keyboard.dismiss();
+        setLoading();
+        try {
+            const resp = await loginService.authenticate({ userName: username, password: password })
+            if (resp) {
+                navigation.replace(ROUTE.MAIN)
+            } else {
+                setError(new Error('Unauthorized'))
+            }
+        } catch (error) {
+            setError(error)
+        }
+    }
+
     return (
         <MainContainer>
+            {viewState.isLoading && <Spinner />}
             <AppBackground>
                 <View style={styles.header}>
-                    <TitleLabel titleStyle={theme.text.subtitle2} text='Welcome!'/>
+                    <TitleLabel text="Welcome !" label="h2" />
                 </View>
+
                 <View style={styles.form}>
-                    <FormInput placeholder="Input your email" onChangeValue={onChangeUserName} value={userName}/>
-                    <FormInput isPassword placeholder="Input your password" onChangeValue={onChangePassword}
-                               value={password}/>
-                    <FormButton label='Login' style={styles.buttonSpace} onClick={() => {
-                        navigation.replace(ROUTE.MAIN)
-                    }} Icon={<Entypo name="lock-open" style={styles.iconButton}/>}/>
+                    <FormInput value={username} onChangeValue={setUsername} placeholder="Input your Username" />
+                    <FormPassword value={password} onChangeValue={setPassword} placeholder="Input your Password" />
+                    <FormButton label="Login" onClick={onAuthenticate} />
                 </View>
             </AppBackground>
+            {viewState.error !== null && <SnackBar message="Unauthorized" />}
         </MainContainer>
-    );
-};
+    )
+}
 
-const styling = (theme) => (StyleSheet.create({
+const styles = StyleSheet.create({
     header: {
-        flex: 1,
+        flex: 1, // ini berarti header 1/3 dari screen (karena appbackground flex nya 1 dan form flex nya 2)
         justifyContent: 'flex-end',
         alignItems: 'flex-start',
-        marginLeft: theme.spacing.m,
-        marginBottom: theme.spacing.m,
+        marginLeft: 16,
+        marginBottom: 16
     },
     form: {
-        alignSelf: 'stretch',
-        flex: 2,
+        alignItems: 'stretch',
+        flex: 2 // ini berarti form 2/3 dari screen (karena appbackground flex nya 1 dan header flex nya 2)
     },
-    buttonSpace: {
-        marginTop: theme.spacing.l
-    },
-    background: {
-        flex: 1,
-    },
-    iconButton: {
-        color: theme.colors.white,
-        fontSize: 14,
-        marginRight: theme.spacing.s
-    }
-}));
+})
+
 export default LoginPage;
