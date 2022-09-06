@@ -15,6 +15,7 @@ import SnackBar from "../../shared/components/SnackBar";
 import useViewState from "../../shared/hook/UseViewState";
 import { useDependency } from "../../shared/hook/UseDependency";
 import TitleLabel from "../../shared/components/TitleLabel";
+import { useAuth } from "../../shared/hook/UseAuth";
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -23,12 +24,13 @@ const LoginPage = () => {
 
     const { viewState, setLoading, setError } = useViewState();
     const { loginService } = useDependency();
+    const { onLogin } = useAuth();
 
     const onAuthenticate = async () => {
         Keyboard.dismiss();
         setLoading();
         try {
-            const resp = await loginService.authenticate({ userName: username, password: password })
+            const resp = await onLogin({ userName: username, password: password });
             if (resp) {
                 navigation.replace(ROUTE.MAIN)
             } else {

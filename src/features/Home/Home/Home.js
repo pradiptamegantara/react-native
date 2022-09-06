@@ -10,12 +10,14 @@ import MenuView from "./components/MenuView";
 import { useTheme } from "../../../shared/context/ThemeContext";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ROUTE } from "../../../shared/constants";
+import { useAuth } from '../../../shared/hook/UseAuth';
 
 const Home = () => {
     const theme = useTheme();
     const styles = styling(theme);
     const navigation = useNavigation();
     const route = useRoute();
+    const { onLogout } = useAuth();
 
     const [modalVisible, setModalVisible] = useState(false);
 
@@ -24,6 +26,17 @@ const Home = () => {
             console.log(route.params?.message)
         }
     }, [route.params?.message]);
+
+    const handleLogout = async () => {
+        try {
+            const resp = await onLogout();
+            if (resp) {
+                navigation.replace(ROUTE.LOGIN)
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
     return (
         <MainContainer>
@@ -76,9 +89,7 @@ const Home = () => {
                     </View>
                     <View>
                         <HeaderPageLabel text='Operational Setting' />
-                        <TouchableOpacity onPress={() => {
-                            navigation.replace(ROUTE.LOGIN);
-                        }}>
+                        <TouchableOpacity onPress={handleLogout}>
                             <Text>Logout</Text>
                         </TouchableOpacity>
                     </View>

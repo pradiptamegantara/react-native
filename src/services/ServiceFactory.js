@@ -3,7 +3,7 @@ import { loginService } from "./LoginService";
 
 export const serviceFactory = (apiClient) => {
     return {
-        productService: productService(),
+        productService: productService(apiClient),
         loginService: loginService(apiClient)
     }
 }

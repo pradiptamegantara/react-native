@@ -8,6 +8,7 @@ import { DependencyProvider } from "./src/shared/context/DependencyContext";
 // import { apiClientFactory } from "./src/shared/ApiCLientFactory";
 import { clientInstance } from "./src/shared/AxiosClient";
 import { apiClientFactory } from "./src/shared/ApiClientFactory";
+import { AuthProvider } from "./src/shared/context/AuthContext";
 
 export default function App() {
     const fonts = useAppFont();
@@ -21,7 +22,9 @@ export default function App() {
             <SafeAreaProvider>
                 <ThemeProvider>
                     <NavigationContainer>
-                        <AppRouter />
+                        <AuthProvider>
+                            <AppRouter />
+                        </AuthProvider>
                     </NavigationContainer>
                 </ThemeProvider>
             </SafeAreaProvider>

@@ -7,11 +7,33 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { FontAwesome } from "@expo/vector-icons";
 import { useTheme } from "../shared/context/ThemeContext";
 import Menu1 from "../features/Home/Menu1";
+import { useAuth } from "../shared/hook/UseAuth";
+import { useEffect, useState } from "react";
+import { View } from "react-native";
 
 const Stack = createStackNavigator();
 const AppRouter = () => {
     const theme = useTheme();
-    return (
+    const { isTokenExist } = useAuth();
+    const [initialRoute, setInitialRoute] = useState(null);
+
+    useEffect(() => {
+        const onValidToken = async () => {
+            try {
+                const resp = await isTokenExist();
+                console.log('token', resp);
+                if (resp) {
+                    setInitialRoute(ROUTE.MAIN);
+                } else {
+                    setInitialRoute(ROUTE.WELCOME);
+                }
+            } catch (e) {
+                setInitialRoute(ROUTE.WELCOME);
+            }
+        }
+        onValidToken();
+    }, [])
+    return initialRoute !== null ? (
         <Stack.Navigator initialRouteName={ROUTE.WELCOME}>
             <Stack.Group screenOptions={{ headerShown: false }}>
                 <Stack.Screen name={ROUTE.LOGIN} component={LoginPage} />
@@ -33,7 +55,9 @@ const AppRouter = () => {
                 }} />
             </Stack.Group>
         </Stack.Navigator>
-    );
+    ) : (
+        <View></View>
+    )
 };
 
 export default AppRouter;

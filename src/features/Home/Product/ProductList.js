@@ -1,15 +1,15 @@
-import {FlatList, View} from "react-native";
+import { FlatList, View } from "react-native";
 import Item from "./components/ProductItem";
-import {useDependency} from "../../../shared/hook/UseDependency";
-import {useEffect, useState} from "react";
+import { useDependency } from "../../../shared/hook/UseDependency";
+import { useEffect, useState } from "react";
 import MainContainer from "../../../shared/components/MainContainer";
 import HeaderPageLabel from "../../../shared/components/HeaderPageLabel";
 import AppBackground from "../../../shared/components/AppBackground";
-import {useTheme} from "../../../shared/context/ThemeContext";
+import { useTheme } from "../../../shared/context/ThemeContext";
 
 const ProductList = () => {
     const theme = useTheme();
-    const {productService} = useDependency();
+    const { productService } = useDependency();
     const [products, setProducts] = useState([]);
     const [isFetching, setIsFetching] = useState(false);
     const [page, setPage] = useState(1);
@@ -20,17 +20,17 @@ const ProductList = () => {
     const onGetAllProduct = async () => {
         setIsFetching(true);
         try {
-            const response = await productService.getAllProduct(page);
+            const response = await productService.getAllProduct(page, 20);
             if (page === 1) {
                 setProducts([
-                        ...response
-                    ]
+                    ...response
+                ]
                 );
             } else {
                 setProducts(prevState => [
-                        ...prevState,
-                        ...response
-                    ]
+                    ...prevState,
+                    ...response
+                ]
                 );
             }
             setIsFetching(false);
@@ -53,14 +53,14 @@ const ProductList = () => {
         setPage(1);
     }
 
-    const renderItem = ({item}) => {
-        return <Item productName={item.productName}/>
+    const renderItem = ({ item }) => {
+        return <Item productName={item.productName} />
     }
     return (
         <MainContainer>
             <AppBackground>
-                <View style={{margin: theme.spacing.s}}>
-                    <HeaderPageLabel text='Product'/>
+                <View style={{ margin: theme.spacing.s }}>
+                    <HeaderPageLabel text='Product' />
                     <FlatList
                         onRefresh={onRefresh}
                         onEndReached={onFetchMore}
