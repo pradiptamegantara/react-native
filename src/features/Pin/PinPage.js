@@ -1,87 +1,88 @@
-import Icon from "react-native-vector-icons/Ionicons"
-import {Text} from "react-native";
+import {FlatList, Text, TextInput, View} from "react-native";
 import MainContainer from "../../shared/components/MainContainer";
-import {useEffect, useState, useRef} from "react";
-import { SafeAreaView, StatusBar} from "react-native"
-import ReactNativePinView from "react-native-pin-view"
+import {useNavigation, useRoute} from "@react-navigation/native";
+import FormButton from "../../shared/components/FormButton";
+import {useEffect, useState} from "react";
+import {useTheme} from "../../shared/context/ThemeContext";
+import PinButton from "./components/PinButton";
+import PinInputIndicator from "./components/PinInputIndicator";
 
 const PinPage = () => {
-    const pinView = useRef(null)
-    const [showRemoveButton, setShowRemoveButton] = useState(false)
-    const [enteredPin, setEnteredPin] = useState("")
-    const [showCompletedButton, setShowCompletedButton] = useState(false)
+    const theme = useTheme();
+    const navigation = useNavigation();
+    const route = useRoute();
+    const [pinParam, setPinParam] = useState({});
+    const [pin, setPin] = useState('');
+    const [pinButtons, setPinButtons] = useState([]);
     useEffect(() => {
-        if (enteredPin.length > 0) {
-          setShowRemoveButton(true)
-        } else {
-          setShowRemoveButton(false)
+        if (route.params?.userId && route.params?.prevPage) {
+            setPinParam({
+                userId: route.params.userId,
+                prevPage: route.params.prevPage
+            })
         }
-        if (enteredPin.length === 6) {
-          setShowCompletedButton(true)
-        } else {
-          setShowCompletedButton(false)
+    }, [route.params]);
+
+    useEffect(() => {
+        setPinButtons(renderPinButton())
+    }, [])
+
+    const renderPins = ({item}) => {
+        return <PinButton text={item} onPress={setPin}/>
+    }
+
+    const renderPinButton = () => {
+        const pinLabels = ['0','1','2','3','4','5','6','7','8','9']
+
+        const shuffledPinLabels = pinLabels
+            .map(value => ({value, sort: Math.random()}))
+            .sort((a,b) => a.sort - b.sort)
+            .map(({value}) => value);
+        
+        shuffledPinLabels.splice(9,0,'-1');
+        shuffledPinLabels.push('<');
+
+        const pins = []
+        for (let i = 0; i < shuffledPinLabels.length; i++) {
+            const startIndex = (i * 3);
+            const endIndex = (i * 3 + 3);
+            const buttons = shuffledPinLabels.slice(startIndex,endIndex);
+            const b = (<FlatList key={i}
+                data={buttons}
+                horizontal
+                renderItem={renderPins} 
+                keyExtractor={item => item}
+                contentContainerStyle={{flex: 1, justifyContent: 'space-evenly'}}
+                />
+            )
+            pins.push(b)
         }
-      }, [enteredPin])
+        return pins
+    }
 
     return (
         <MainContainer>
-            <StatusBar barStyle="light-content" />
-        <SafeAreaView
-          style={{ flex: 1, backgroundColor: "orange", justifyContent: "center", alignItems: "center" }}>
-          <Text
-            style={{
-              paddingTop: 24,
-              paddingBottom: 48,
-              color: "rgba(255,255,255,0.7)",
-              fontSize: 48,
-            }}>
-            Please input PIN
-          </Text>
-          <ReactNativePinView
-            inputSize={32}
-            ref={pinView}
-            pinLength={6}
-            buttonSize={60}
-            onValueChange={value => setEnteredPin(value)}
-            buttonAreaStyle={{
-              marginTop: 24,
-            }}
-            inputAreaStyle={{
-              marginBottom: 24,
-            }}
-            inputViewEmptyStyle={{
-              backgroundColor: "transparent",
-              borderWidth: 1,
-              borderColor: "#FFF",
-            }}
-            inputViewFilledStyle={{
-              backgroundColor: "#FFF",
-            }}
-            buttonViewStyle={{
-              borderWidth: 1,
-              borderColor: "#FFF",
-            }}
-            buttonTextStyle={{
-              color: "#FFF",
-            }}
-            onButtonPress={key => {
-              if (key === "custom_left") {
-                pinView.current.clear()
-              }
-              if (key === "custom_right") {
-                alert("Entered Pin: " + enteredPin)
-              }
-              if (key === "three") {
-                alert("You can't use 3")
-              }
-            }}
-            customLeftButton={showRemoveButton ? <Icon name={"ios-backspace"} size={36} color={"#FFF"} /> : undefined}
-            customRightButton={showCompletedButton ? <Icon name={"ios-unlock"} size={36} color={"#FFF"} /> : undefined}
-          />
-        </SafeAreaView>
-
+            <View style={{alignItems: 'center'}}>
+                <View style={{width: '50%'}}>
+                    <Text style={[theme.text.subtitle, {
+                        textAlign: 'center',
+                    }]}>Please input PIN {'\n'} (User id : {pinParam.userId})</Text>
+                    <View style={{margin: theme.spacing.l}}>
+                        <PinInputIndicator pinVal={pin}/>
+                    </View>
+                </View>
+            </View>
+            <FormButton onClick={() => {
+                console.log(pin)
+                navigation.navigate(pinParam.prevPage, {
+                    message: 'ok'
+                })
+            }} label={'Submit'}></FormButton>
+            <View style={{flex: 1, justifyContent: 'center'}}>
+                <View>
+                    {pinButtons}
+                </View>
+            </View>
         </MainContainer>
     )
 }
-
-export default PinPage
